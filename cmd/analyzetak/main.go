@@ -141,7 +141,7 @@ func analyzeWith(player *ai.MinimaxAI, p *tak.Position) {
 	defer cancel()
 	pv, val, _ := player.Analyze(ctx, p)
 	if !*quiet {
-		cli.RenderBoard(os.Stdout, p)
+		cli.RenderBoard(nil, os.Stdout, p)
 		if *explain {
 			ai.ExplainScore(player, os.Stdout, p)
 		}
@@ -179,7 +179,7 @@ func analyzeWith(player *ai.MinimaxAI, p *tak.Position) {
 
 	if !*quiet {
 		fmt.Println("Resulting position:")
-		cli.RenderBoard(os.Stdout, p)
+		cli.RenderBoard(nil, os.Stdout, p)
 		if *explain {
 			ai.ExplainScore(player, os.Stdout, p)
 		}
