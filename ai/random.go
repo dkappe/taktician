@@ -5,7 +5,7 @@ import (
 
 	"golang.org/x/net/context"
 
-	"github.com/nelhage/taktician/tak"
+	"taktician/tak"
 )
 
 type RandomAI struct {

@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/nelhage/taktician/tak"
+	"taktician/tak"
 )
 
 func TestParseMove(t *testing.T) {

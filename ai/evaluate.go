@@ -5,8 +5,8 @@ import (
 	"io"
 	"text/tabwriter"
 
-	"github.com/nelhage/taktician/bitboard"
-	"github.com/nelhage/taktician/tak"
+	"taktician/bitboard"
+	"taktician/tak"
 )
 
 const (

@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"flag"
-	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
@@ -12,11 +11,11 @@ import (
 
 	"golang.org/x/net/context"
 
-	"github.com/nelhage/taktician/ai"
-	"github.com/nelhage/taktician/ai/mcts"
-	"github.com/nelhage/taktician/cli"
-	"github.com/nelhage/taktician/ptn"
-	"github.com/nelhage/taktician/tak"
+	"taktician/ai"
+	"taktician/ai/mcts"
+	"taktician/cli"
+	"taktician/ptn"
+	"taktician/tak"
 )
 
 var (
@@ -81,6 +80,22 @@ func parsePlayer(in *bufio.Reader, s string) cli.Player {
 		})
 		return &aiWrapper{p}
 	}
+	if strings.HasPrefix(s, "newmax") {
+		var depth = 3
+		if len(s) > len("newmax") {
+			i, err := strconv.Atoi(s[len("newmax:"):])
+			if err != nil {
+				log.Fatal(err)
+			}
+			depth = i
+		}
+		p := ai.NewNewmax(ai.NewmaxConfig{
+			Size:  *size,
+			Depth: depth,
+			Debug: *debug,
+		})
+		return &aiWrapper{p}
+	}
 	if strings.HasPrefix(s, "mcts") {
 		var limit = 30 * time.Second
 		if len(s) > len("mcts") {
@@ -111,15 +126,41 @@ func main() {
 		Black:  parsePlayer(in, *black),
 		Glyphs: glyphs(),
 	}
-	st.Play()
+	pos := st.Play()
 	if *out != "" {
 		p := &ptn.PTN{}
+		var result string
+		var winner tak.Color
+		_, winner = pos.GameOver()
+		if winner == tak.White {
+			result = "1-0"
+		} else if winner == tak.Black {
+			result = "0-1"
+		} else {
+			result = "1/2-1/2"
+		}
+
 		p.Tags = []ptn.Tag{
 			{Name: "Size", Value: strconv.Itoa(*size)},
 			{Name: "Player1", Value: *white},
-			{Name: "Player2", Value: *white},
+			{Name: "Player2", Value: *black},
+			{Name: "Result", Value: result},
 		}
 		p.AddMoves(st.Moves())
-		ioutil.WriteFile(*out, []byte(p.Render()), 0644)
+		appendGame(*out, []byte(p.Render()))
 	}
+}
+
+func appendGame(filename string, game []byte) {
+	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+         panic(err)
+    }
+    defer file.Close()
+    if _, err = file.Write(game); err != nil {
+      panic(err)
+    }
+    if _, err = file.WriteString("\n"); err != nil {
+      panic(err)
+    }
 }

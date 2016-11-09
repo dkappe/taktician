@@ -12,7 +12,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/nelhage/taktician/tak"
+	"taktician/tak"
 )
 
 type Tag struct {

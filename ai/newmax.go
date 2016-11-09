@@ -1,7 +1,7 @@
 package ai
 
 import (
-	"bytes"
+	//"bytes"
 	"log"
 	"math/rand"
 	"sync/atomic"
@@ -14,7 +14,7 @@ import (
 	"taktician/tak"
 )
 
-const (
+/*const (
 	MaxEval      int64 = 1 << 30
 	MinEval            = -MaxEval
 	WinThreshold       = 1 << 29
@@ -23,12 +23,12 @@ const (
 
 	maxDepth = 15
 	maxMoves = 500
-)
+)*/
 
-type EvaluationFunc func(c *bitboard.Constants, p *tak.Position) int64
+//type EvaluationFunc func(c *bitboard.Constants, p *tak.Position) int64
 
-type MinimaxAI struct {
-	cfg  MinimaxConfig
+type NewmaxAI struct {
+	cfg  NewmaxConfig
 	rand *rand.Rand
 
 	st Stats
@@ -43,7 +43,7 @@ type MinimaxAI struct {
 	depth int
 	stack [maxDepth]struct {
 		p  *tak.Position
-		mg moveGenerator
+		mg newMoveGenerator
 		pv [maxDepth]tak.Move
 		m  tak.Move
 
@@ -52,9 +52,10 @@ type MinimaxAI struct {
 	}
 
 	cancel *int32
+	MinimaxAI
 }
 
-type tableEntry struct {
+/*type tableEntry struct {
 	hash  uint64
 	depth int
 	value int64
@@ -98,9 +99,9 @@ type Stats struct {
 
 	Extensions    uint64
 	ReducedSlides uint64
-}
+}*/
 
-func (s Stats) Merge(other Stats) Stats {
+/*func (s Stats) Merge(other Stats) Stats {
 	s.Generated += other.Generated
 	s.Evaluated += other.Evaluated
 	s.Scout += other.Scout
@@ -119,9 +120,9 @@ func (s Stats) Merge(other Stats) Stats {
 	s.Extensions += other.Extensions
 	s.ReducedSlides += other.ReducedSlides
 	return s
-}
+}*/
 
-type MinimaxConfig struct {
+type NewmaxConfig struct {
 	Size  int
 	Depth int
 	Debug int
@@ -142,7 +143,7 @@ type MinimaxConfig struct {
 	Evaluate EvaluationFunc
 }
 
-// MakePrecise modifies a MinimaxConfig to produce a MinimaxAI that
+// MakePrecise modifies a NewmaxConfig to produce a NewmaxAI that
 // will always produce accurate game-theoretic evaluations – i.e. it
 // disables all heuristic searches that cannot prove the correctness
 // of their results.
@@ -150,14 +151,14 @@ type MinimaxConfig struct {
 // In general, such configurations should be slower and weaker
 // players, but can be useful for constructing or solving puzzles,
 // debugging, or analyzing unusual positions.
-func (cfg *MinimaxConfig) MakePrecise() {
+func (cfg *NewmaxConfig) MakePrecise() {
 	cfg.NoNullMove = true
 	cfg.NoExtendForces = true
 	cfg.NoReduceSlides = true
 }
 
-func NewMinimax(cfg MinimaxConfig) *MinimaxAI {
-	m := &MinimaxAI{cfg: cfg}
+func NewNewmax(cfg NewmaxConfig) *NewmaxAI {
+	m := &NewmaxAI{cfg: cfg}
 	if m.cfg.Depth == 0 {
 		m.cfg.Depth = maxDepth
 	}
@@ -180,9 +181,9 @@ func NewMinimax(cfg MinimaxConfig) *MinimaxAI {
 	return m
 }
 
-const hashMul = 0x61C8864680B583EB
+//const hashMul = 0x61C8864680B583EB
 
-func (m *MinimaxAI) ttGet(h uint64) *tableEntry {
+func (m *NewmaxAI) ttGet(h uint64) *tableEntry {
 	if m.cfg.NoTable {
 		return nil
 	}
@@ -199,7 +200,7 @@ func (m *MinimaxAI) ttGet(h uint64) *tableEntry {
 	return nil
 }
 
-func (m *MinimaxAI) ttPut(h uint64) *tableEntry {
+func (m *NewmaxAI) ttPut(h uint64) *tableEntry {
 	if m.cfg.NoTable {
 		return nil
 	}
@@ -214,12 +215,12 @@ func (m *MinimaxAI) ttPut(h uint64) *tableEntry {
 	return &m.table[i1]
 }
 
-func (m *MinimaxAI) precompute() {
+func (m *NewmaxAI) precompute() {
 	s := uint(m.cfg.Size)
 	m.c = bitboard.Precompute(s)
 }
 
-func formatpv(ms []tak.Move) string {
+/*func formatpv(ms []tak.Move) string {
 	var out bytes.Buffer
 	out.WriteString("[")
 	for i, m := range ms {
@@ -230,9 +231,9 @@ func formatpv(ms []tak.Move) string {
 	}
 	out.WriteString("]")
 	return out.String()
-}
+}*/
 
-func (ai *MinimaxAI) GetMove(ctx context.Context, p *tak.Position) tak.Move {
+func (ai *NewmaxAI) GetMove(ctx context.Context, p *tak.Position) tak.Move {
 	pv, v, st := ai.Analyze(ctx, p)
 	if ai.cfg.RandomizeWindow == 0 {
 		return pv[0]
@@ -244,7 +245,7 @@ func (ai *MinimaxAI) GetMove(ctx context.Context, p *tak.Position) tak.Move {
 	base := v - ai.cfg.RandomizeWindow
 	var i int64
 	mg := &ai.stack[0].mg
-	*mg = moveGenerator{
+	*mg = newMoveGenerator{
 		ai:    ai,
 		ply:   0,
 		depth: st.Depth,
@@ -274,10 +275,10 @@ func (ai *MinimaxAI) GetMove(ctx context.Context, p *tak.Position) tak.Move {
 	return rv
 }
 
-func (ai *MinimaxAI) AnalyzeAll(ctx context.Context, p *tak.Position) ([][]tak.Move, int64, Stats) {
+func (ai *NewmaxAI) AnalyzeAll(ctx context.Context, p *tak.Position) ([][]tak.Move, int64, Stats) {
 	pv, v, st := ai.Analyze(ctx, p)
 	mg := &ai.stack[0].mg
-	*mg = moveGenerator{
+	*mg = newMoveGenerator{
 		ai:    ai,
 		ply:   0,
 		depth: st.Depth,
@@ -313,7 +314,7 @@ func (ai *MinimaxAI) AnalyzeAll(ctx context.Context, p *tak.Position) ([][]tak.M
 	return out, v, st
 }
 
-func (m *MinimaxAI) Analyze(ctx context.Context, p *tak.Position) ([]tak.Move, int64, Stats) {
+func (m *NewmaxAI) Analyze(ctx context.Context, p *tak.Position) ([]tak.Move, int64, Stats) {
 	if m.cfg.Size != p.Size() {
 		panic("Analyze: wrong size")
 	}
@@ -433,11 +434,11 @@ func (m *MinimaxAI) Analyze(ctx context.Context, p *tak.Position) ([]tak.Move, i
 	return ms, v, st
 }
 
-func (m *MinimaxAI) Evaluate(p *tak.Position) int64 {
+func (m *NewmaxAI) Evaluate(p *tak.Position) int64 {
 	return m.evaluate(&m.c, p)
 }
 
-func (ai *MinimaxAI) minimax(
+func (ai *NewmaxAI) minimax(
 	p *tak.Position,
 	ply, depth int,
 	pv []tak.Move,
@@ -534,7 +535,7 @@ func (ai *MinimaxAI) minimax(
 	// stack-allocated object here doesn't escape. So we force it
 	// into our manual stack.
 	mg := &ai.stack[ply].mg
-	*mg = moveGenerator{
+	*mg = newMoveGenerator{
 		ai:    ai,
 		ply:   ply,
 		depth: depth,
@@ -636,7 +637,7 @@ func (ai *MinimaxAI) minimax(
 	return best, α
 }
 
-func (ai *MinimaxAI) nullMoveOK(ply, depth int, p *tak.Position) bool {
+func (ai *NewmaxAI) nullMoveOK(ply, depth int, p *tak.Position) bool {
 	if ai.cfg.NoNullMove {
 		return false
 	}

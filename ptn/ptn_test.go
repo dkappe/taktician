@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/nelhage/taktician/tak"
+	"taktician/tak"
 )
 
 const testGame = `

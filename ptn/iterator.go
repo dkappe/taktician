@@ -1,6 +1,6 @@
 package ptn
 
-import "github.com/nelhage/taktician/tak"
+import "taktician/tak"
 
 type Iterator struct {
 	ptn *PTN

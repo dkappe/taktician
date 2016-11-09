@@ -7,8 +7,8 @@ import (
 
 	"golang.org/x/net/context"
 
-	"github.com/nelhage/taktician/ptn"
-	"github.com/nelhage/taktician/tak"
+	"taktician/ptn"
+	"taktician/tak"
 )
 
 var size = flag.Int("size", 5, "board size to benchmark")

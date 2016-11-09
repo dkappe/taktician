@@ -1,7 +1,7 @@
 package ai
 
 import (
-	"github.com/nelhage/taktician/tak"
+	"taktician/tak"
 	"golang.org/x/net/context"
 )
 

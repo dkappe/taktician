@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/nelhage/taktician/tak"
+	"taktician/tak"
 )
 
 func TestIterator(t *testing.T) {

@@ -9,10 +9,10 @@ import (
 
 	"golang.org/x/net/context"
 
-	"github.com/nelhage/taktician/ai"
-	"github.com/nelhage/taktician/bitboard"
-	"github.com/nelhage/taktician/ptn"
-	"github.com/nelhage/taktician/tak"
+	"taktician/ai"
+	"taktician/bitboard"
+	"taktician/ptn"
+	"taktician/tak"
 )
 
 type MCTSConfig struct {

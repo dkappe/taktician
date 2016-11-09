@@ -3,8 +3,8 @@ package mcts
 import (
 	"golang.org/x/net/context"
 
-	"github.com/nelhage/taktician/ai"
-	"github.com/nelhage/taktician/tak"
+	"taktician/ai"
+	"taktician/tak"
 )
 
 func UniformRandomPolicy(ctx context.Context,

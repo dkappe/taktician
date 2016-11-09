@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/nelhage/taktician/bitboard"
-	"github.com/nelhage/taktician/ptn"
-	"github.com/nelhage/taktician/tak"
+	"taktician/bitboard"
+	"taktician/ptn"
+	"taktician/tak"
 )
 
 func TestEvaluateWinner(t *testing.T) {

@@ -6,8 +6,8 @@ import (
 	"taktician/tak"
 )
 
-type moveGenerator struct {
-	ai    *MinimaxAI
+type newMoveGenerator struct {
+	ai    *NewmaxAI
 	ply   int
 	depth int
 	p     *tak.Position
@@ -19,7 +19,7 @@ type moveGenerator struct {
 	i  int
 }
 
-type sortMoves struct {
+/*type sortMoves struct {
 	ms []tak.Move
 	vs []int
 }
@@ -32,8 +32,9 @@ func (s sortMoves) Swap(i, j int) {
 	s.ms[i], s.ms[j] = s.ms[j], s.ms[i]
 	s.vs[i], s.vs[j] = s.vs[j], s.vs[i]
 }
+*/
 
-func (mg *moveGenerator) sortMoves() {
+func (mg *newMoveGenerator) sortMoves() {
 	s := sortMoves{
 		mg.ms,
 		mg.ai.stack[mg.ply].vals[:len(mg.ms)],
@@ -44,7 +45,7 @@ func (mg *moveGenerator) sortMoves() {
 	sort.Sort(s)
 }
 
-func (mg *moveGenerator) Next() (m tak.Move, p *tak.Position) {
+func (mg *newMoveGenerator) Next() (m tak.Move, p *tak.Position) {
 	for {
 		var m tak.Move
 		switch mg.i {
